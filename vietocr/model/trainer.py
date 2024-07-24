@@ -24,6 +24,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import time
+from tqdm import tqdm
 
 class Trainer():
     def __init__(self, config, pretrained=True, augmentor=ImgAugTransformV2()):
@@ -89,9 +90,10 @@ class Trainer():
         total_loader_time = 0
         total_gpu_time = 0
         best_acc = 0
-
+        
         data_iter = iter(self.train_gen)
-        for i in range(self.num_iters):
+        pbar = tqdm(range(self.num_iters),total=self.num_iters)
+        for _ in pbar:
             self.iter += 1
 
             start = time.time()
@@ -106,11 +108,12 @@ class Trainer():
 
             start = time.time()
             loss = self.step(batch)
+            
             total_gpu_time += time.time() - start
 
             total_loss += loss
             self.train_losses.append((self.iter, loss))
-
+            pbar.set_description(f"Loss : {round(loss,2)}")
             if self.iter % self.print_every == 0:
                 info = 'iter: {:06d} - train loss: {:.3f} - lr: {:.2e} - load time: {:.2f} - gpu time: {:.2f}'.format(self.iter, 
                         total_loss/self.print_every, self.optimizer.param_groups[0]['lr'], 
@@ -341,7 +344,7 @@ class Trainer():
 
         batch = self.batch_to_device(batch)
         img, tgt_input, tgt_output, tgt_padding_mask = batch['img'], batch['tgt_input'], batch['tgt_output'], batch['tgt_padding_mask']    
-        
+       
         outputs = self.model(img, tgt_input, tgt_key_padding_mask=tgt_padding_mask)
 #        loss = self.criterion(rearrange(outputs, 'b t v -> (b t) v'), rearrange(tgt_output, 'b o -> (b o)'))
         outputs = outputs.view(-1, outputs.size(2))#flatten(0, 1)

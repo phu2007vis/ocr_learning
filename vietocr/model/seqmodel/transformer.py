@@ -41,16 +41,16 @@ class LanguageTransformer(nn.Module):
 
         tgt = self.pos_enc(self.embed_tgt(tgt) * math.sqrt(self.d_model))
         
-        output = self.transformer(src, tgt, tgt_mask=tgt_mask, src_key_padding_mask=src_key_padding_mask,
-                                  tgt_key_padding_mask=tgt_key_padding_mask.float(), memory_key_padding_mask=memory_key_padding_mask)
+        output = self.transformer(src, tgt, tgt_mask=tgt_mask, src_key_padding_mask=src_key_padding_mask,tgt_key_padding_mask=tgt_key_padding_mask.float(), memory_key_padding_mask=memory_key_padding_mask)
 #        output = rearrange(output, 't n e -> n t e')
         output = output.transpose(0, 1)
         return self.fc(output)
 
     def gen_nopeek_mask(self, length):
+
         mask = (torch.triu(torch.ones(length, length)) == 1).transpose(0, 1)
         mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
-
+    
         return mask
     
     def forward_encoder(self, src):
@@ -122,3 +122,16 @@ class LayerNorm(nn.Module):
         s = (x - u).pow(2).mean(-1, keepdim=True)
         x = (x - u) / torch.sqrt(s + self.variance_epsilon)
         return self.gamma * x + self.beta  
+if __name__ == "__main__":
+    length = 10
+    model = LanguageTransformer(
+                                vocab_size  = 50, 
+                                d_model = 512, 
+                                nhead = 8, 
+                                num_encoder_layers = 2,
+                                num_decoder_layers = 4, 
+                                dim_feedforward = 1024,
+                                max_seq_length = 50, 
+                                pos_dropout = 0.2,
+                                trans_dropout = 0.2)
+    model.gen_nopeek_mask(length)

@@ -21,6 +21,7 @@ from vietocr.tool.translate import resize
 
 class OCRDataset(Dataset):
     def __init__(self, lmdb_path, root_dir, annotation_path, vocab, image_height=32, image_min_width=32, image_max_width=512, transform=None):
+    
         self.root_dir = root_dir
         self.annotation_path = os.path.join(root_dir, annotation_path)
         self.vocab = vocab
@@ -37,17 +38,20 @@ class OCRDataset(Dataset):
             sys.stdout.flush()
         else:
             createDataset(self.lmdb_path, root_dir, annotation_path)
-        
+    
         self.env = lmdb.open(
             self.lmdb_path,
             max_readers=8,
             readonly=True,
             lock=False,
             readahead=False,
-            meminit=False)
+            meminit=False,
+            )
+        
         self.txn = self.env.begin(write=False)
 
         nSamples = int(self.txn.get('num-samples'.encode()))
+        
         self.nSamples = nSamples
 
         self.build_cluster_indices()

@@ -1,7 +1,6 @@
 import setuptools
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+
 
 setuptools.setup(
     name="vietocr",
@@ -9,7 +8,6 @@ setuptools.setup(
     author="pbcquoc",
     author_email="pbcquoc@gmail.com",
     description="Transformer base text detection",
-    long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/pbcquoc/vietocr",
     packages=setuptools.find_packages(),
