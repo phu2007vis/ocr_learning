@@ -34,7 +34,8 @@ transformer:
     max_seq_length: 1024
     pos_dropout: 0.1
     trans_dropout: 0.1
-pretrain: https://vocr.vn/data/vietocr/vgg_transformer.pth
+pretrain: C:\Users\9999\phuoc\ocr\vietocr\results\weights\transformerocr.pth
+weights: C:\Users\9999\phuoc\ocr\vietocr\results\weights\transformerocr.pth
 
 optimizer:
     max_lr: 0.0003 
@@ -46,8 +47,8 @@ trainer:
     valid_every: 4000
     iters: 100000
     # where to save our model for prediction
-    export: results/weights/transformerocr.pth
-    checkpoint: results/checkpoint/transformerocr_checkpoint.pth
+    export: results/weights2/transformerocr.pth
+    checkpoint: results/checkpoint2/transformerocr_checkpoint.pth
     log: results/train.log
     # null to disable compute accuracy, or change to number of sample to enable validation while training
     metrics: null
@@ -59,6 +60,7 @@ dataset:
     data_root: C:\Users\9999\phuoc\ocr\vietocr\data\InkData_line_processed
     train_annotation: C:\Users\9999\phuoc\ocr\vietocr\data\valid_InkData_line_processed.txt
     valid_annotation: C:\Users\9999\phuoc\ocr\vietocr\data\valid_InkData_line_processed.txt
+    test_annotation: C:\Users\9999\phuoc\ocr\vietocr\data\test_InkData_line_processed.txt
     # resize image to 32 height, larger height will increase accuracy
     image_height: 32
     image_min_width: 32

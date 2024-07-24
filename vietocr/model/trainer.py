@@ -39,6 +39,7 @@ class Trainer():
         self.data_root = config['dataset']['data_root']
         self.train_annotation = config['dataset']['train_annotation']
         self.valid_annotation = config['dataset']['valid_annotation']
+        self.test_annotation = config['dataset']['test_annotation']
         self.dataset_name = config['dataset']['name']
 
         self.batch_size = config['trainer']['batch_size']
@@ -81,6 +82,9 @@ class Trainer():
         if self.valid_annotation:
             self.valid_gen = self.data_gen('valid_{}'.format(self.dataset_name), 
                     self.data_root, self.valid_annotation, masked_language_model=False)
+        if self.test_annotation:
+            self.test_gen = self.data_gen('test_{}'.format(self.dataset_name), 
+                    self.data_root, self.test_annotation, masked_language_model=False)
 
         self.train_losses = []
         
@@ -138,13 +142,16 @@ class Trainer():
                     best_acc = acc_full_seq
 
             
-    def validate(self):
+    def validate(self,phase = None):
         self.model.eval()
 
         total_loss = []
+        dataloader = self.valid_gen
+        if phase =='test':
+            dataloader = self.test_gen
         
         with torch.no_grad():
-            for step, batch in enumerate(self.valid_gen):
+            for step, batch in enumerate(dataloader):
                 batch = self.batch_to_device(batch)
                 img, tgt_input, tgt_output, tgt_padding_mask = batch['img'], batch['tgt_input'], batch['tgt_output'], batch['tgt_padding_mask']
 

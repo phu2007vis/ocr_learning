@@ -15,11 +15,11 @@ def main():
 
     if args.checkpoint:
         trainer.load_checkpoint(args.checkpoint)
-    val_loss = trainer.validate()
+        
+    val_loss = trainer.validate(phase='test')
     acc_full_seq, acc_per_char = trainer.precision(trainer.metrics)
-
     info = 'iter: {:06d} - valid loss: {:.3f} - acc full seq: {:.4f} - acc per char: {:.4f}'.format(trainer.iter, val_loss, acc_full_seq, acc_per_char)
-    
+    print(info)
 
 if __name__ == '__main__':
     main()
